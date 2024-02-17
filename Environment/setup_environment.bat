@@ -50,9 +50,10 @@ if errorlevel 1 exit /b %errorlevel%
 CALL conda install numpy -y
 CALL conda install pandas -y
 CALL conda install pytorch torchvision torchaudio cuda-toolkit=12.1 -c pytorch -c nvidia -y
-
+CALL conda install tqdm -y
 :: pip
 CALL pip install mido[ports-rtmidi] -y
+CALL pip install rich -y
 
 CALL conda clean --all -y
 echo Setup completato con successo.
