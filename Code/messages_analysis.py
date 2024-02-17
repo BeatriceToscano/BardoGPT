@@ -13,7 +13,7 @@ def main():
     messages = {}
 
     with open(MESSAGES_DUMP_FILE, "w") as f:
-        with Progress() as progress:
+        with Progress(refresh_per_second=1000000000) as progress:
             task1 = progress.add_task("[red]Song", total=len(dl))
             for song in dl:
 
@@ -32,15 +32,15 @@ def main():
                             progress.update(task3, advance=1, description=msg)
 
                         progress.remove_task(task3)
-                        progress.update(task2, advance=1)
+                        progress.update(task3, advance=1)
                     progress.remove_task(task2)
                     progress.update(task1, advance=1, description="[red]Song".rjust(100, ' ') + "\n" + "[white]" + song[-100:].ljust(100, ' '))
                 except Exception as e:
                     progress.update(task1, advance=1, description="[red]Song".rjust(100, ' ') + "\n" + "[white]" + song[-100:].ljust(100, ' '))
                     try:
                         os.remove(song)
-                    except:
-                        f.write(f"{song} Error: {e}\n")
+                    except Exception as e2:
+                        f.write(f"{song} Error: {e2}\n")
                         continue
                     continue
         progress.remove_task(task1)

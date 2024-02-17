@@ -1,5 +1,7 @@
 import os
 
+from mido import MidiFile
+
 from Variables import DATASET_PATH_FOLDER
 
 
@@ -32,4 +34,4 @@ class DataLoader:
             raise StopIteration
 
     def getDataAbout(self, file):
-        return file
+        mid = MidiFile(file)
