@@ -6,7 +6,7 @@ from tqdm import tqdm
 from Variables import *
 
 
-def main():
+def main(use_markers=False):
     files = []
     for d, _, fs in os.walk(DATASET_PATH_FOLDER):
         for n in fs:
@@ -40,7 +40,9 @@ def main():
                 events.add(f"Chord_{'.'.join(str(n.pitch.midi) for n in part.notes)}_{part.duration.quarterLength}")
             elif isinstance(part, note.Rest):
                 events.add(f"Rest_0_{part.duration.quarterLength}")
-
+    if use_markers:
+        events.add('START')
+        events.add('END')
     # Aggiorna i dizionari solo con i nuovi eventi
     new_events = sorted(list(events - set(event_to_idx.keys())))
     starting_index = len(event_to_idx)

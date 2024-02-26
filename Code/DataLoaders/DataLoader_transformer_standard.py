@@ -7,7 +7,8 @@ from Variables import *
 
 
 class DataLoader:
-    def __init__(self, prepare=True):
+    def __init__(self, prepare=True, use_markers=False):
+        self.use_markers = use_markers
         self.path = DATASET_PATH_FOLDER
         self.pointer = 0
         self.files = []
@@ -55,9 +56,12 @@ class DataLoader:
         event_indices = []
         event_names = []
         keys = 0
+        if self.use_markers:
+            event_indices.append(self.event_to_idx['START'])
+            event_names.append('START')
         for part in score.recurse():
             keys += 1
-            if keys >= 2048:
+            if keys+2 >= 2048:
                 break
             if isinstance(part, note.Note):
                 event_key = f"Note_{part.pitch.midi}_{part.duration.quarterLength}"
@@ -75,5 +79,7 @@ class DataLoader:
             else:
                 # Gestisci il caso in cui l'evento non sia nel vocabolario
                 print(f"Evento non trovato nel vocabolario: {event_key}")
-
+        if self.use_markers:
+            event_indices.append(self.event_to_idx['END'])
+            event_names.append('END')
         return event_indices, event_names
