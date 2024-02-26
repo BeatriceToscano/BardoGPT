@@ -152,4 +152,4 @@ cython_debug/
 #.idea/
 
 # dataset folder
-DataSets/
+DataSets/MIDI
