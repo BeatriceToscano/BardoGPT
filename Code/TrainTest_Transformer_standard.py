@@ -126,7 +126,7 @@ def test(model, idx_to_event, max_length=1000, start_sequence=None, temperature=
 
 
 if __name__ == "__main__":
-    #generate_vocabulary.main(use_markers=True)
+    generate_vocabulary.main(use_markers=True)
     with open(EVENT_TO_IDX_JSON_PATH, 'r') as f:
         event_to_idx = json.load(f)
 

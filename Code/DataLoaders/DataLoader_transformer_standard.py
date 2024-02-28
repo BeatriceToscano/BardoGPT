@@ -47,7 +47,10 @@ class DataLoader:
             raise StopIteration
 
     def getDataAbout(self, file, prep=False):
-        score = converter.parse(file)
+        try:
+            score = converter.parse(file)
+        except Exception as e:
+            return self.__next__()
         if prep:
             return self.prepareData(score)
         return score

@@ -29,17 +29,21 @@ def main(use_markers=False):
     events = set(event_to_idx.keys())  # Inizia con gli eventi esistenti
 
     for midi_path in tqdm(files, desc="Processing MIDI files"):
-        score = converter.parse(midi_path)
+        try:
+            score = converter.parse(midi_path)
 
-        for part in score.recurse():
-            if isinstance(part, note.Note):
-                # Converti la tupla in una stringa per la serializzazione JSON
-                events.add(f"Note_{part.pitch.midi}_{part.duration.quarterLength}")
-            elif isinstance(part, chord.Chord):
-                # Usa ':' come separatore per i pitch degli accordi per evitare conflitti
-                events.add(f"Chord_{'.'.join(str(n.pitch.midi) for n in part.notes)}_{part.duration.quarterLength}")
-            elif isinstance(part, note.Rest):
-                events.add(f"Rest_0_{part.duration.quarterLength}")
+            for part in score.recurse():
+                if isinstance(part, note.Note):
+                    # Converti la tupla in una stringa per la serializzazione JSON
+                    events.add(f"Note_{part.pitch.midi}_{part.duration.quarterLength}")
+                elif isinstance(part, chord.Chord):
+                    # Usa ':' come separatore per i pitch degli accordi per evitare conflitti
+                    events.add(f"Chord_{'.'.join(str(n.pitch.midi) for n in part.notes)}_{part.duration.quarterLength}")
+                elif isinstance(part, note.Rest):
+                    events.add(f"Rest_0_{part.duration.quarterLength}")
+        except Exception as e:
+            continue
+
     if use_markers:
         events.add('START')
         events.add('END')
