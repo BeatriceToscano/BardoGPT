@@ -23,7 +23,7 @@ def get_lr(step, model_size=512 * 6, factor=1, warmup=4000):
     return factor * (model_size ** -0.5) * min(arg1, arg2)
 
 
-def train(dl, model, warmup=4000, idx_to_event=None, epochs=10, user_markers=False):
+def train(dl, model, warmup=4000, idx_to_event=None, event_to_idx=None, epochs=10, user_markers=False):
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-7, betas=(0.9, 0.98), eps=1e-9)
     criterion = torch.nn.CrossEntropyLoss()
     losses = []
@@ -65,14 +65,14 @@ def train(dl, model, warmup=4000, idx_to_event=None, epochs=10, user_markers=Fal
             torch.cuda.empty_cache()
             if step % 100 == 0:
                 model.save("model.pth")
-                test(model, idx_to_event, save_path=os.path.join(VALIDATION_PATH, f"generated_{epoch}_{step}.mid"), use_markers=user_markers)
+                test(model, idx_to_event, event_to_idx, save_path=os.path.join(VALIDATION_PATH, f"generated_{epoch}_{step}.mid"), use_markers=user_markers)
     plt.ioff()
     plt.savefig("losses.png")
 
     return model
 
 
-def test(model, idx_to_event, max_length=1000, start_sequence=None, temperature=1.0, save_path=None, use_markers=False):
+def test(model, idx_to_event, event_to_idx, max_length=1000, start_sequence=None, temperature=1.0, save_path=None, use_markers=False):
     model.eval()  # Imposta il modello in modalità valutazione
 
     if start_sequence is None:
@@ -125,7 +125,7 @@ def test(model, idx_to_event, max_length=1000, start_sequence=None, temperature=
     return events
 
 
-if __name__ == "__main__":
+def main():
     generate_vocabulary.main(use_markers=True)
     with open(EVENT_TO_IDX_JSON_PATH, 'r') as f:
         event_to_idx = json.load(f)
@@ -139,4 +139,8 @@ if __name__ == "__main__":
 
     transformer = train(dataLoader, transformer, warmup=1000, idx_to_event=idx_to_event, epochs=2, user_markers=True)
     transformer.save("model.pth")
-    print(np.unique(test(transformer, idx_to_event, 100, use_markers=True), return_counts=True))
+    print(np.unique(test(transformer, idx_to_event, event_to_idx, 100, use_markers=True), return_counts=True))
+
+
+if __name__ == "__main__":
+    main()
